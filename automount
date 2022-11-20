@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Change working directory to place where this script is saved
+cd "$(dirname "$0")"
+
+source externals/bashutils/validation
+source externals/bashutils/colors
+source externals/bashutils/error
+
+source functions.sh
+
+mnt::load_config
+mnt::validate_all_configs
+
+while :
+do
+  mnt::process
+	sleep "${REFRESH_INTERVAL}"
+done

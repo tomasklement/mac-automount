@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "Uninstalling Mac automount"
+
+# Change working directory to place where this script is saved
+cd "$(dirname "$0")"
+
+source externals/bashutils/colors
+source externals/bashutils/error
+
+source functions.sh
+
+mnt::load_config
+mnt::remove_job
+
+echo -e "${GREEN}Finished uninstalling Mac automount${NC}"

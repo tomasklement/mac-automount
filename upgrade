@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Change working directory to place where this script is saved
+cd "$(dirname "$0")"
+
+git --version 2>&1 >/dev/null
+
+if [[ "$?" -gt 0 ]]; then
+  echo "Error: latest version of GIT should be installed" >&2
+  exit 1
+fi
+
+echo "Downloading latest version"
+
+git pull --rebase
+git submodule update --recursive --remote
+
+echo -e "${GREEN}Newest version downloaded${NC}"
+
+echo "Restarting daemon"
+
+./restart
+
+echo -e "${GREEN}Upgrade finished${NC}"

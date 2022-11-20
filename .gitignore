@@ -1,0 +1,8 @@
+# Ignore mounts configs
+/mounts_config/*
+
+# But not the sample
+!/mounts_config/sample.conf
+
+# Ignore custom configuration file
+/config.sh

@@ -1,0 +1,18 @@
+#!/bin/bash
+echo "Installing Mac automount"
+
+# Change working directory to place where this script is saved
+cd "$(dirname "$0")"
+
+source externals/bashutils/validation
+source externals/bashutils/colors
+source externals/bashutils/error
+
+source functions.sh
+
+mnt::load_config
+mnt::validate_all_configs
+mnt::save_passwords
+mnt::create_job
+
+echo -e "${GREEN}Finished installing Mac automount${NC}"

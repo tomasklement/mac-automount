@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "Restarting Mac automount"
+
+# Change working directory to place where this script is saved
+cd "$(dirname "$0")"
+
+source externals/bashutils/colors
+source externals/bashutils/error
+
+source functions.sh
+
+mnt::load_config
+mnt::stop_job
+mnt::start_job
+
+echo -e "${GREEN}Mac automount agent loaded${NC}"
