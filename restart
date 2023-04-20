@@ -9,7 +9,7 @@ source externals/bashutils/error
 
 source functions.sh
 
-mnt::load_config
+mnt::load_main_config
 mnt::stop_job
 mnt::start_job
 

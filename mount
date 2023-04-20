@@ -10,6 +10,6 @@ source externals/bashutils/error
 
 source functions.sh
 
-mnt::load_config
+mnt::load_main_config
 mnt::validate_all_configs
 mnt::process

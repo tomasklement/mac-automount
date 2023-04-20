@@ -7,7 +7,7 @@
 #   None
 # Returns:
 #   None (globals from config file are set)
-function mnt::load_config {
+function mnt::load_main_config {
   source base_config.sh
   if [[ -n "${CUSTOM_CONFIG_FILE_NAME}" ]] && \
     [[ -f "${CUSTOM_CONFIG_FILE_NAME}" ]]; then
@@ -123,7 +123,7 @@ function mnt::validate_all_configs {
 
   for config in $( mnt::get_mounts_configs )
   do
-    mnt:::load_config "${config}"
+    mnt::load_mount_config "${config}"
     # Validate configured variables
     mnt::validate_config "${config}"
     # Unset configuration vars for next round
@@ -251,7 +251,7 @@ function mnt::is_mounted {
 #   Configuration file path
 # Returns:
 #   None
-function mnt:::load_config {
+function mnt::load_mount_config {
   # Declare default values
   PORT="139"
 
@@ -282,7 +282,7 @@ function mnt::process {
 
     echo -e "${BLUE}Start processing of \""${config}"\"${NC}"
 
-    mnt:::load_config "${config}"
+    mnt::load_mount_config "${config}"
 
     # In case MAC address check is reqired, load all MAC addresses in local net
     # and use that for next iterations (to save time)
@@ -329,7 +329,7 @@ function mnt::save_passwords {
 
   for config in $( mnt::get_mounts_configs )
   do
-    mnt:::load_config "${config}"
+    mnt::load_mount_config "${config}"
 
     share_url=$( mnt::create_share_url )
 
