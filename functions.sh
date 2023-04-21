@@ -88,7 +88,7 @@ function mnt::unset_config_vars {
 # Globals:
 #   Config vars: HOST, USERNAME, SHARE_NAME, MOUNT_POINT
 # Arguments:
-#   Configuration file path
+#   None
 # Returns:
 #   None
 function mnt::validate_config {
@@ -125,7 +125,7 @@ function mnt::validate_all_configs {
   do
     mnt::load_mount_config "${config}"
     # Validate configured variables
-    mnt::validate_config "${config}"
+    mnt::validate_config
     # Unset configuration vars for next round
     mnt::unset_config_vars
   done
