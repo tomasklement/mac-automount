@@ -6,11 +6,12 @@ cd "$(dirname "$0")"
 
 source externals/bashutils/colors
 source externals/bashutils/error
+source externals/bashutils/launchd
 
 source functions.sh
 
 mnt::load_main_config
-mnt::stop_job
-mnt::start_job
+mld::stop_job "${APP_NAME}"
+mld::start_job "${APP_NAME}"
 
 echo -e "${GREEN}Mac automount agent loaded${NC}"

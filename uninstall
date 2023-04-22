@@ -6,10 +6,11 @@ cd "$(dirname "$0")"
 
 source externals/bashutils/colors
 source externals/bashutils/error
+source externals/bashutils/launchd
 
 source functions.sh
 
 mnt::load_main_config
-mnt::remove_job
+mld::remove_job "${APP_NAME}"
 
 echo -e "${GREEN}Finished uninstalling Mac automount${NC}"
