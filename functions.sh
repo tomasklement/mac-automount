@@ -82,6 +82,7 @@ function mnt::unset_config_vars {
   USERNAME=""
   SHARE_NAME=""
   MOUNT_POINT=""
+  MOUNT_POINT_LOCK_PERMISSIONS=""
 }
 
 # Validates configuration variables
@@ -104,10 +105,6 @@ function mnt::validate_config {
     error_text=$( arr::join ", " "${empty_variables[@]}" )
     error_text="Missing configuration variables: \"${error_text}\" in \"${1}\""
     err::throw 134 "${error_text}"
-  fi
-
-  if [[ ! -w "${MOUNT_POINT}" ]]; then
-    err::throw 134 "Mount dir \"${MOUNT_POINT}\" is not writable or not exist"
   fi
 }
 
@@ -144,14 +141,15 @@ function mnt::create_share_url {
 
 # Unmounts network disk
 # Globals:
-#   Config vars: MOUNT_POINT
+#   Config vars: MOUNT_POINT, MOUNT_POINT_LOCK_PERMISSIONS
 # Arguments:
 #   None
 # Returns:
 #   True or false
 function mnt::unmount {
   echo "Unmounting \"${MOUNT_POINT}\""
-  umount -f "${MOUNT_POINT}" &
+  umount -f "${MOUNT_POINT}"
+  mnt::lock_mount_point "${MOUNT_POINT_LOCK_PERMISSIONS}"
 }
 
 # Mounts network disk
@@ -179,6 +177,8 @@ function mnt::mount {
   else
     echo "Password for \"${share_url}\" was not found in keychain"
   fi
+
+  mnt::unlock_mount_point
 
   echo "Mounting \"${share_url}\""
   result=$(mount_smbfs \
@@ -299,7 +299,7 @@ function mnt::process {
     fi
 
     if "${is_mounted}" && ! "${is_online}"; then
-      mnt::unmount
+      mnt::unmount &
     fi
 
     if "${is_online}" && ! "${is_mounted}"; then
@@ -356,4 +356,39 @@ function mnt::save_passwords {
     # Unset configuration vars for next round
     mnt::unset_config_vars
   done
+}
+
+# Locks mount point. Applies permissions from MOUNT_POINT_LOCK_PERMISSIONS
+# Globals:
+#   MOUNT_POINT Mount point path
+#   MOUNT_POINT_LOCK_PERMISSIONS Lock permissions to be applied
+# Arguments:
+#   None
+# Returns:
+#   None
+function mnt::lock_mount_point {
+  local message
+  if [[ ! -z "${MOUNT_POINT_LOCK_PERMISSIONS}" ]]; then
+    message="Locking mount point \"${MOUNT_POINT}\" "
+    message+="with permissions \"${MOUNT_POINT_LOCK_PERMISSIONS}\""
+    echo "${message}"
+    chmod "${MOUNT_POINT_LOCK_PERMISSIONS}" "${MOUNT_POINT}"
+  fi
+}
+
+# Unlocks mount point. Changes permissions from MOUNT_POINT_LOCK_PERMISSIONS to
+# original permissions (MOUNT_POINTS_PERMISSIONS)
+# Globals:
+#   MOUNT_POINT Mount point path
+# Arguments:
+#   None
+# Returns:
+#   None
+function mnt::unlock_mount_point {
+  echo "Adding write permissions to mount point \"${MOUNT_POINT}\""
+  chmod +w "${MOUNT_POINT}" &> /dev/null
+
+  if [[ ! -w "${MOUNT_POINT}" ]]; then
+    err::throw 134 "Mount dir \"${MOUNT_POINT}\" is not writable or not exist"
+  fi
 }
